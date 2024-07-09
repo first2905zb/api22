@@ -1,0 +1,35 @@
+version: '3.1'
+
+services:
+  db:
+    image: mysql:8.0.34
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: P@ssword1234
+      MYSQL_DATABASE: health
+      MYSQL_USER: gbass
+      MYSQL_PASSWORD: P@ssword1234
+    volumes:
+      - ./init-db:/docker-entrypoint-initdb.d
+      - ./db-data:/var/lib/mysql
+    ports:
+      - '3306:3306'
+    networks:
+      - mynetwork
+  api:
+    build: .
+    environment:
+      DB_HOST: db
+      DB_USER: gbass
+      DB_PASSWORD: P@ssword1234
+      DB_DATABASE: health
+    ports:
+      - '5000:5000'
+    depends_on:
+      - db
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
